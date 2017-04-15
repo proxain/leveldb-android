@@ -31,11 +31,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "com_github_hf_leveldb_implementation_NativeIterator.h"
-#include "leveldb/iterator.h"
-#include "leveldb/slice.h"
-#include "leveldb/options.h"
-#include "leveldb/status.h"
+#include <jni/NativeIterator.h>
+
+#include <leveldb/iterator.h>
+#include <leveldb/slice.h>
+#include <leveldb/options.h>
+#include <leveldb/status.h>
 
 #include <android/log.h>
 

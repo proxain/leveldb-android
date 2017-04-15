@@ -31,10 +31,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "com_github_hf_leveldb_implementation_NativeWriteBatch.h"
+#include <jni/NativeWriteBatch.h>
 
-#include "leveldb/options.h"
-#include "leveldb/write_batch.h"
+#include <leveldb/options.h>
+#include <leveldb/write_batch.h>
 
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBatch_ncreate
 (JNIEnv *env, jclass cself) {

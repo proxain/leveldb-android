@@ -2,18 +2,14 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-repositories {
-    mavenCentral()
-}
-
 def gitVersion = { ->
-  def stdout = new ByteArrayOutputStream()
-  exec {
-    commandLine 'git', 'describe', '--tags'
-    standardOutput = stdout
-  }
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags'
+        standardOutput = stdout
+    }
 
-  return stdout.toString().trim()
+    return stdout.toString().trim()
 }
 
 def GIT_VERSION = gitVersion()
@@ -30,104 +26,109 @@ group 'com.github.hf'
 version VERSION
 
 install {
-  repositories.mavenInstaller {
-    pom.project {
-      name 'leveldb'
-      description 'LevelDB bindings for Android.'
-      url 'https://github.com/hf/leveldb-android'
-      inceptionYear '2014'
-        
-      packaging 'aar'
-      groupId 'com.github.hf'
-      artifactId 'leveldb'
-      
-      version VERSION
-      
-      licenses {
-        license {
-          name 'BSD 3-Clause'
-          url 'https://github.com/hf/leveldb-android/blob/master/LICENSE.txt'
-          distribution 'repo'
+    repositories.mavenInstaller {
+        pom.project {
+            name 'leveldb'
+            description 'LevelDB bindings for Android.'
+            url 'https://github.com/hf/leveldb-android'
+            inceptionYear '2014'
+
+            packaging 'aar'
+            groupId 'com.github.hf'
+            artifactId 'leveldb'
+
+            version VERSION
+
+            licenses {
+                license {
+                    name 'BSD 3-Clause'
+                    url 'https://github.com/hf/leveldb-android/blob/master/LICENSE.txt'
+                    distribution 'repo'
+                }
+            }
+
+            scm {
+                connection 'https://github.com/hf/leveldb-android.git'
+                url 'https://github.com/hf/leveldb-android'
+            }
+
+            developers {
+                developer {
+                    name 'Stojan Dimitrovski'
+                }
+            }
         }
-      }
-     
-      scm {
-        connection 'https://github.com/hf/leveldb-android.git'
-        url 'https://github.com/hf/leveldb-android'
-      }
-      
-      developers {
-        developer {
-          name 'Stojan Dimitrovski'
-        }
-      }
     }
-  }
 }
 
 bintray {
-  user = System.getenv('BINTRAY_USER')
-  key  = System.getenv('BINTRAY_KEY')
+    user = System.getenv('BINTRAY_USER')
+    key  = System.getenv('BINTRAY_KEY')
 
-  configurations = ['archives']
+    configurations = ['archives']
 
-  pkg {
-    repo = 'android'
-    name = 'leveldb-android'
-    licenses = ['BSD 3-Clause']
-    vcsUrl = 'https://github.com/hf/leveldb-android.git'
-    
-    userOrg = user
-    
-    websiteUrl = 'https://github.com/hf/leveldb-android'
-    issueTrackerUrl = 'https://github.com/hf/leveldb-android'
-    
-    githubRepo = 'hf/leveldb-android'
-    githubReleaseNotesFile = 'README.md'
-    
-    version {
-      name = VERSION
-      desc = "LevelDB (${LEVELDB_VERSION}) for Android."
-      released = new Date()
-      vcsTag = MAIN_VERSION
+    pkg {
+        repo = 'android'
+        name = 'leveldb-android'
+        licenses = ['BSD 3-Clause']
+        vcsUrl = 'https://github.com/hf/leveldb-android.git'
+
+        userOrg = user
+
+        websiteUrl = 'https://github.com/hf/leveldb-android'
+        issueTrackerUrl = 'https://github.com/hf/leveldb-android'
+
+        githubRepo = 'hf/leveldb-android'
+        githubReleaseNotesFile = 'README.md'
+
+        version {
+            name = VERSION
+            desc = "LevelDB (${LEVELDB_VERSION}) for Android."
+            released = new Date()
+            vcsTag = MAIN_VERSION
+        }
     }
-  }
 }
 
 android {
-    compileSdkVersion 24 
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         minSdkVersion 10
-        targetSdkVersion 24 
+        targetSdkVersion 25
 
         testApplicationId "com.github.hf.leveldb.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
         testHandleProfiling true
         testFunctionalTest true
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_TOOLCHAIN=clang'
+                arguments '-DANDROID_STL=c++_static'
+                arguments '-DANDROID_NATIVE_API_LEVEL=android-21'
+                arguments '-DANDROID_PLATFORM=android-21'
+            }
+        }
+        ndk {
+            abiFilters 'armeabi-v7a', 'armeabi', 'arm64-v8a', 'x86', 'x86_64', 'mips', 'mips64'
+            moduleName "leveldb"
+        }
     }
-    
+
     buildTypes {
         debug {
             testCoverageEnabled = true
         }
     }
-}
-
-dependencies {
-    androidTestCompile 'commons-io:commons-io:2.+'
-    androidTestCompile 'org.assertj:assertj-core:1.6.+'
-}
-
-task preBuildLevelDB {
-
-    doLast {
-        exec {
-            commandLine 'sh', projectDir.getAbsolutePath() + '/src/main/jni-prebuild/prebuild'
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
         }
     }
 }
 
-preBuild.dependsOn preBuildLevelDB
-preBuild {}.mustRunAfter preBuildLevelDB
+dependencies {
+    androidTestCompile 'commons-io:commons-io:2.4'
+    androidTestCompile 'org.assertj:assertj-core:1.6.1'
+}

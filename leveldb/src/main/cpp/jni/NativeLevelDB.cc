@@ -31,13 +31,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "com_github_hf_leveldb_implementation_NativeLevelDB.h"
+#include <jni/NativeLevelDB.h>
+
 #include <iostream>
 
-#include "leveldb/db.h"
-#include "leveldb/write_batch.h"
-#include "leveldb/env.h"
-#include "leveldb/cache.h"
+#include <leveldb/db.h>
+#include <leveldb/write_batch.h>
+#include <leveldb/env.h>
+#include <leveldb/cache.h>
 
 #include <android/log.h>
 

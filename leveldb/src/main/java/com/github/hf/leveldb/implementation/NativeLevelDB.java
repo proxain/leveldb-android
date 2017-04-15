@@ -47,7 +47,7 @@ import com.github.hf.leveldb.exception.LevelDBSnapshotOwnershipException;
  */
 public class NativeLevelDB extends LevelDB {
     static {
-        System.loadLibrary("leveldb");
+        System.loadLibrary("leveldb-android");
     }
 
     /**

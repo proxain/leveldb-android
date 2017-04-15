@@ -45,7 +45,7 @@ import java.io.Closeable;
  */
 public class NativeWriteBatch implements Closeable {
     static {
-        System.loadLibrary("leveldb");
+        System.loadLibrary("leveldb-android");
     }
 
     // Don't touch this. If you do, something somewhere dies.
