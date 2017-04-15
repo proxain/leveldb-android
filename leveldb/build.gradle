@@ -131,4 +131,6 @@ android {
 dependencies {
     androidTestCompile 'commons-io:commons-io:2.4'
     androidTestCompile 'org.assertj:assertj-core:1.6.1'
+
+    testCompile 'junit:junit:4.12'
 }
