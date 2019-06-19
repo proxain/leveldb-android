@@ -1,64 +1,24 @@
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.9)
 
-set(LEVELDB "src/main/cpp/leveldb")
+set(levelDB_src_DIR "src/main/cpp/leveldb")
 
-file(GLOB list src/main/cpp/jni/*.cc)
+set(levelDB_build_DIR "src/main/cpp/leveldb/outputs")
+file(MAKE_DIRECTORY ${levelDB_build_DIR})
 
-file(GLOB leveldb
-    ${LEVELDB}/db/builder.cc
-    ${LEVELDB}/db/c.cc
-    ${LEVELDB}/db/db_impl.cc
-    ${LEVELDB}/db/db_iter.cc
-    ${LEVELDB}/db/dbformat.cc
-    ${LEVELDB}/db/filename.cc
-    ${LEVELDB}/db/log_reader.cc
-    ${LEVELDB}/db/log_writer.cc
-    ${LEVELDB}/db/memtable.cc
-    ${LEVELDB}/db/repair.cc
-    ${LEVELDB}/db/table_cache.cc
-    ${LEVELDB}/db/version_edit.cc
-    ${LEVELDB}/db/version_set.cc
-    ${LEVELDB}/db/write_batch.cc
-    ${LEVELDB}/table/block.cc
-    ${LEVELDB}/table/block_builder.cc
-    ${LEVELDB}/table/filter_block.cc
-    ${LEVELDB}/table/format.cc
-    ${LEVELDB}/table/iterator.cc
-    ${LEVELDB}/table/merger.cc
-    ${LEVELDB}/table/table.cc
-    ${LEVELDB}/table/table_builder.cc
-    ${LEVELDB}/table/two_level_iterator.cc
-    ${LEVELDB}/util/arena.cc
-    ${LEVELDB}/util/bloom.cc
-    ${LEVELDB}/util/cache.cc
-    ${LEVELDB}/util/coding.cc
-    ${LEVELDB}/util/comparator.cc
-    ${LEVELDB}/util/crc32c.cc
-    ${LEVELDB}/util/env.cc
-    ${LEVELDB}/util/env_posix.cc
-    ${LEVELDB}/util/filter_policy.cc
-    ${LEVELDB}/util/hash.cc
-    ${LEVELDB}/util/histogram.cc
-    ${LEVELDB}/util/logging.cc
-    ${LEVELDB}/util/options.cc
-    ${LEVELDB}/util/status.cc
-    ${LEVELDB}/port/port_posix.cc
-    ${LEVELDB}/port/port_posix_sse.cc
+add_subdirectory(
+        ${levelDB_src_DIR}
+        ${levelDB_build_DIR}
 )
 
-SET( CMAKE_CXX_FLAGS                 "-std=c++11 -fexceptions -frtti -DOS_ANDROID -DLEVELDB_PLATFORM_POSIX")
-SET( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "-std=c++11 -fexceptions -frtti -DOS_ANDROID -DLEVELDB_PLATFORM_POSIX")
-SET( CMAKE_CXX_FLAGS_RELEASE         "-std=c++11 -fexceptions -frtti -DOS_ANDROID -DLEVELDB_PLATFORM_POSIX")
-SET( CMAKE_CXX_FLAGS_DEBUG           "-std=c++11 -fexceptions -frtti -DOS_ANDROID -DLEVELDB_PLATFORM_POSIX")
+add_library( leveldb STATIC IMPORTED )
 
-add_library(leveldb-android SHARED
-    ${list}
-    ${leveldb}
-)
+set_target_properties( leveldb PROPERTIES IMPORTED_LOCATION
+        ${levelDB_build_DIR}/${ANDROID_ABI}/lib_leveldb.a )
 
-include_directories(${LEVELDB} ${LEVELDB}/include)
+include_directories( ${levelDB_src_DIR}/include )
 include_directories(src/main/cpp)
 
 target_link_libraries(leveldb-android
-                        android
-                        log)
+        leveldb
+        android
+        log)

@@ -1,20 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
-        minSdkVersion 10
-        targetSdkVersion 25
+        minSdkVersion 14
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
 }
 
 dependencies {
-    androidTestCompile 'commons-io:commons-io:2.4'
-    androidTestCompile 'org.assertj:assertj-core:1.6.1'
+    androidTestImplementation 'commons-io:commons-io:20030203.000550'
+    androidTestImplementation 'org.assertj:assertj-core:3.12.2'
 
-    compile 'com.github.hf:leveldb:1.19.0@aar'
+    implementation project(":leveldb")
 }

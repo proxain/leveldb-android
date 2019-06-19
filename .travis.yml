@@ -11,21 +11,21 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-23.0.3
+    - build-tools-28.0.3
     - extra-google-m2repository
     - extra-android-m2repository
-    - android-24
-    - sys-img-armeabi-v7a-android-24
+    - android-28
+    - sys-img-armeabi-v7a-android-28
 
 before_install:
   - jdk_switcher use oraclejdk8
   - java -version
   - android list targets
-  - echo no | android create avd --force -n test -t android-24 --abi $ANDROID_ABI
+  - echo no | android create avd --force -n test -t android-28 --abi $ANDROID_ABI
   - emulator -avd test -no-skin -no-audio -no-window &
-  - wget https://dl.google.com/android/repository/android-ndk-r13-linux-x86_64.zip
-  - unzip -q android-ndk-r13-linux-x86_64.zip
-  - export PATH=$PATH:$PWD/android-ndk-r13
+  - wget https://dl.google.com/android/repository/android-ndk-r20-linux-x86_64.zip
+  - unzip -q android-ndk-r20-linux-x86_64.zip
+  - export PATH=$PATH:$PWD/android-ndk-r20
 
 before_script:
   - ./ci/wait_for_emulator.sh
