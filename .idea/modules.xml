@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/leveldb.iml" filepath="$PROJECT_DIR$/leveldb.iml" />
-      <module fileurl="file://$PROJECT_DIR$/leveldb/leveldb-leveldb.iml" filepath="$PROJECT_DIR$/leveldb/leveldb-leveldb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
+      <module fileurl="file://$PROJECT_DIR$/leveldb-android.iml" filepath="$PROJECT_DIR$/leveldb-android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/leveldb/leveldb-android-leveldb.iml" filepath="$PROJECT_DIR$/leveldb/leveldb-android-leveldb.iml" />
     </modules>
   </component>
 </project>
-

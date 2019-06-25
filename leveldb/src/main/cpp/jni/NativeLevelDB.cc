@@ -43,21 +43,21 @@
 #include <android/log.h>
 
 // Redirects leveldb's logging to the Android logger.
-class AndroidLogger : public leveldb::Logger {
-public:
-  virtual void Logv(const char* format, va_list ap) {
-    __android_log_vprint(ANDROID_LOG_INFO, "com.github.hf.leveldb:N", format, ap);
-  }
-};
+//class AndroidLogger : public leveldb::Logger {
+//public:
+//    void Logv(const char* format, va_list ap) override {
+//        __android_log_vprint(ANDROID_LOG_INFO, "com.github.hf.leveldb:N", format, ap);
+//    }
+//};
 
 // Holds references to heap-allocated native objects so that they can be
 // closed in Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeClose.
 class NDBHolder {
 public:
-  NDBHolder(leveldb::DB* ldb, AndroidLogger* llogger, leveldb::Cache* lcache) : db(ldb), logger(llogger), cache(lcache) {}
+  NDBHolder(leveldb::DB* ldb/*, AndroidLogger* llogger*/, leveldb::Cache* lcache) : db(ldb)/*, logger(llogger)*/, cache(lcache) {}
 
   leveldb::DB* db;
-  AndroidLogger* logger;
+//  AndroidLogger* logger;
 
   leveldb::Cache* cache;
 };
@@ -89,15 +89,15 @@ void throwExceptionFromStatus(JNIEnv *env, leveldb::Status &status) {
   }
 }
 
-JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeOpen
+extern "C" JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeOpen
 (JNIEnv *env, jclass cself, jboolean createIfMissing, jint cacheSize, jint blockSize, jint writeBufferSize, jstring path) {
 
   const char *nativePath = env->GetStringUTFChars(path, 0);
 
   leveldb::DB *db;
 
-  AndroidLogger* logger = new AndroidLogger();
-  leveldb::Cache* cache = NULL;
+//    auto * logger = new AndroidLogger();
+  leveldb::Cache* cache = nullptr;
 
   if (cacheSize != 0) {
     cache = leveldb::NewLRUCache((size_t) cacheSize);
@@ -105,9 +105,9 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
 
   leveldb::Options options;
   options.create_if_missing = createIfMissing == JNI_TRUE;
-  options.info_log = logger;
+//  options.info_log = logger;
 
-  if (cache != NULL) {
+  if (cache != nullptr) {
     options.block_cache = cache;
   }
 
@@ -124,11 +124,11 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
   env->ReleaseStringUTFChars(path, nativePath);
 
   if (status.ok()) {
-    NDBHolder* holder = new NDBHolder(db, logger, cache);
+      auto * holder = new NDBHolder(db/*, logger*/, cache);
 
     return (jlong) holder;
   } else {
-    delete logger;
+//    delete logger;
     delete cache;
   }
 
@@ -137,22 +137,22 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
   return 0;
 }
 
-JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeClose
+extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeClose
 (JNIEnv *env, jclass cself, jlong ndb) {
   if (ndb != 0) {
-    NDBHolder* holder = (NDBHolder*) ndb;
+      auto holder = (NDBHolder*) ndb;
 
     delete holder->db;
     delete holder->cache;
-    delete holder->logger;
+//    delete holder->logger;
     delete holder;
   }
 }
 
-JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativePut
+extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativePut
 (JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jbyteArray key, jbyteArray value) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto * holder = (NDBHolder*) ndb;
 
   leveldb::DB* db = holder->db;
 
@@ -173,27 +173,27 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
   throwExceptionFromStatus(env, status);
 }
 
-JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeWrite
+extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeWrite
   (JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jlong nwb) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto * holder = (NDBHolder*) ndb;
 
   leveldb::DB* db = holder->db;
 
   leveldb::WriteOptions options;
   options.sync = sync == JNI_TRUE;
 
-  leveldb::WriteBatch* wb = (leveldb::WriteBatch*) nwb;
+    auto * wb = (leveldb::WriteBatch*) nwb;
 
   leveldb::Status status = db->Write(options, wb);
 
   throwExceptionFromStatus(env, status);
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeGet
+extern "C" JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeGet
 (JNIEnv *env, jclass cself, jlong ndb, jbyteArray key, jlong nsnapshot) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto * holder = (NDBHolder*) ndb;
 
   leveldb::DB* db = holder->db;
 
@@ -230,10 +230,10 @@ JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLev
   return 0;
 }
 
-JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeDelete
+extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeDelete
 (JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jbyteArray key) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto * holder = (NDBHolder*) ndb;
 
   leveldb::DB* db = holder->db;
 
@@ -251,10 +251,10 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
   throwExceptionFromStatus(env, status);
 }
 
-JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeGetProperty
+extern "C" JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeGetProperty
 (JNIEnv *env, jclass cself, jlong ndb, jbyteArray key) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto * holder = (NDBHolder*) ndb;
 
   leveldb::DB* db = holder->db;
 
@@ -272,7 +272,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLev
 
   if (ok) {
     if (value.length() < 1) {
-      return 0;
+      return nullptr;
     }
 
     jbyteArray retval = env->NewByteArray(value.length());
@@ -282,10 +282,10 @@ JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLev
     return retval;
   }
 
-  return 0;
+  return nullptr;
 }
 
-JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeDestroy
+extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeDestroy
 (JNIEnv *env, jclass cself, jstring path) {
 
   const char *nativePath = env->GetStringUTFChars(path, 0);
@@ -297,7 +297,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
   throwExceptionFromStatus(env, status);
 }
 
-JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeRepair
+extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeRepair
 (JNIEnv *env, jclass cself, jstring path) {
 
   const char *nativePath = env->GetStringUTFChars(path, 0);
@@ -309,9 +309,9 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
   throwExceptionFromStatus(env, status);
 }
 
-JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeIterate
+extern "C" JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeIterate
 (JNIEnv *env, jclass cself, jlong ndb, jboolean fillCache, jlong nsnapshot) {
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto * holder = (NDBHolder*) ndb;
 
   leveldb::DB* db = holder->db;
 
@@ -326,23 +326,23 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
   return (jlong) it;
 }
 
-JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeSnapshot
+extern "C" JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeSnapshot
   (JNIEnv *env, jclass cself, jlong ndb) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto * holder = (NDBHolder*) ndb;
 
   leveldb::DB* db = holder->db;
 
   return (jlong) db->GetSnapshot();
 }
 
-JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeReleaseSnapshot
+extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeReleaseSnapshot
   (JNIEnv *env, jclass cself, jlong ndb, jlong nsnapshot) {
   if (nsnapshot == 0) {
     return;
   }
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto * holder = (NDBHolder*) ndb;
 
   leveldb::DB* db = holder->db;
 
