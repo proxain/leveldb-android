@@ -98,8 +98,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 28
 
-        testApplicationId "com.github.hf.leveldb.test"
-        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testHandleProfiling true
         testFunctionalTest true
         externalNativeBuild {
@@ -123,15 +122,20 @@ android {
             path "CMakeLists.txt"
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 }
 
 dependencies {
+    androidTestImplementation 'androidx.test:core:1.2.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test:runner:1.2.0'
-    //noinspection GradleDependency
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'com.google.truth:truth:0.42'
     androidTestImplementation 'commons-io:commons-io:2.6'
-    androidTestImplementation "com.google.truth:truth:0.40"
+
 
     testImplementation 'junit:junit:4.12'
-    testImplementation 'androidx.test:core:1.2.0'
 }
