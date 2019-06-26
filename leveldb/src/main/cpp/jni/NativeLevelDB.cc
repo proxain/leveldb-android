@@ -40,311 +40,319 @@
 #include <leveldb/env.h>
 #include <leveldb/cache.h>
 
-#include <android/log.h>
-
 // Redirects leveldb's logging to the Android logger.
-class AndroidLogger : public leveldb::Logger {
-public:
-  virtual void Logv(const char* format, va_list ap) {
-    __android_log_vprint(ANDROID_LOG_INFO, "com.github.hf.leveldb:N", format, ap);
-  }
-};
+//class AndroidLogger : public leveldb::Logger {
+//public:
+//    void Logv(const char* format, va_list ap) override {
+//        __android_log_vprint(ANDROID_LOG_INFO, "com.github.hf.leveldb:N", format, ap);
+//    }
+//};
 
 // Holds references to heap-allocated native objects so that they can be
 // closed in Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeClose.
 class NDBHolder {
 public:
-  NDBHolder(leveldb::DB* ldb, AndroidLogger* llogger, leveldb::Cache* lcache) : db(ldb), logger(llogger), cache(lcache) {}
+    NDBHolder(leveldb::DB *ldb/*, AndroidLogger* llogger*/, leveldb::Cache *lcache) : db(ldb)/*, logger(llogger)*/,
+                                                                                      cache(lcache) {}
 
-  leveldb::DB* db;
-  AndroidLogger* logger;
+    leveldb::DB *db;
+//  AndroidLogger* logger;
 
-  leveldb::Cache* cache;
+    leveldb::Cache *cache;
 };
 
 // Throws the appropriate Java exception for the given status. Make sure you
 // check IsNotFound() and similar possible non-exception statuses before calling
 // this. Please release all Java references before calling this.
 void throwExceptionFromStatus(JNIEnv *env, leveldb::Status &status) {
-  if (status.ok()) {
-    return;
-  }
+    if (status.ok()) {
+        return;
+    }
 
-  if (status.IsIOError()) {
-    jclass ioExceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBIOException");
+    if (status.IsIOError()) {
+        jclass ioExceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBIOException");
 
-    env->ThrowNew(ioExceptionClass, status.ToString().data());
-  } else if (status.IsCorruption()) {
-    jclass corruptionExceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBCorruptionException");
+        env->ThrowNew(ioExceptionClass, status.ToString().data());
+    } else if (status.IsCorruption()) {
+        jclass corruptionExceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBCorruptionException");
 
-    env->ThrowNew(corruptionExceptionClass, status.ToString().data());
-  } else if (status.IsNotFound()) {
-    jclass notFoundExceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBNotFoundException");
+        env->ThrowNew(corruptionExceptionClass, status.ToString().data());
+    } else if (status.IsNotFound()) {
+        jclass notFoundExceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBNotFoundException");
 
-    env->ThrowNew(notFoundExceptionClass, status.ToString().data());
-  } else {
-    jclass exceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBException");
+        env->ThrowNew(notFoundExceptionClass, status.ToString().data());
+    } else {
+        jclass exceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBException");
 
-    env->ThrowNew(exceptionClass, status.ToString().data());
-  }
+        env->ThrowNew(exceptionClass, status.ToString().data());
+    }
 }
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeOpen
-(JNIEnv *env, jclass cself, jboolean createIfMissing, jint cacheSize, jint blockSize, jint writeBufferSize, jstring path) {
+        (JNIEnv *env, jclass cself, jboolean createIfMissing, jint cacheSize, jint blockSize, jint writeBufferSize,
+         jstring path) {
 
-  const char *nativePath = env->GetStringUTFChars(path, 0);
+    const char *nativePath = env->GetStringUTFChars(path, 0);
 
-  leveldb::DB *db;
+    leveldb::DB *db;
 
-  AndroidLogger* logger = new AndroidLogger();
-  leveldb::Cache* cache = NULL;
+//    auto * logger = new AndroidLogger();
+    leveldb::Cache *cache = nullptr;
 
-  if (cacheSize != 0) {
-    cache = leveldb::NewLRUCache((size_t) cacheSize);
-  }
+    if (cacheSize != 0) {
+        cache = leveldb::NewLRUCache((size_t) cacheSize);
+    }
 
-  leveldb::Options options;
-  options.create_if_missing = createIfMissing == JNI_TRUE;
-  options.info_log = logger;
+    leveldb::Options options;
+    options.create_if_missing = createIfMissing == JNI_TRUE;
+//  options.info_log = logger;
 
-  if (cache != NULL) {
-    options.block_cache = cache;
-  }
+    if (cache != nullptr) {
+        options.block_cache = cache;
+    }
 
-  if (blockSize != 0) {
-    options.block_size = (size_t) blockSize;
-  }
+    if (blockSize != 0) {
+        options.block_size = (size_t) blockSize;
+    }
 
-  if (writeBufferSize != 0) {
-    options.write_buffer_size = (size_t) writeBufferSize;
-  }
+    if (writeBufferSize != 0) {
+        options.write_buffer_size = (size_t) writeBufferSize;
+    }
 
-  leveldb::Status status = leveldb::DB::Open(options, nativePath, &db);
+    leveldb::Status status = leveldb::DB::Open(options, nativePath, &db);
 
-  env->ReleaseStringUTFChars(path, nativePath);
+    env->ReleaseStringUTFChars(path, nativePath);
 
-  if (status.ok()) {
-    NDBHolder* holder = new NDBHolder(db, logger, cache);
+    if (status.ok()) {
+        auto *holder = new NDBHolder(db/*, logger*/, cache);
 
-    return (jlong) holder;
-  } else {
-    delete logger;
-    delete cache;
-  }
+        return (jlong) holder;
+    } else {
+//    delete logger;
+        delete cache;
+    }
 
-  throwExceptionFromStatus(env, status);
+    throwExceptionFromStatus(env, status);
 
-  return 0;
+    return 0;
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeClose
-(JNIEnv *env, jclass cself, jlong ndb) {
-  if (ndb != 0) {
-    NDBHolder* holder = (NDBHolder*) ndb;
+        (JNIEnv *env, jclass cself, jlong ndb) {
+    if (ndb != 0) {
+        auto holder = (NDBHolder *) ndb;
 
-    delete holder->db;
-    delete holder->cache;
-    delete holder->logger;
-    delete holder;
-  }
+        delete holder->db;
+        delete holder->cache;
+//    delete holder->logger;
+        delete holder;
+    }
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativePut
-(JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jbyteArray key, jbyteArray value) {
+        (JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jbyteArray key, jbyteArray value) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto *holder = (NDBHolder *) ndb;
 
-  leveldb::DB* db = holder->db;
+    leveldb::DB *db = holder->db;
 
-  leveldb::WriteOptions writeOptions;
-  writeOptions.sync = sync == JNI_TRUE;
+    leveldb::WriteOptions writeOptions;
+    writeOptions.sync = sync == JNI_TRUE;
 
-  const char* keyData = (char*) env->GetByteArrayElements(key, 0);
-  const char* valueData = (char*) env->GetByteArrayElements(value, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
+    const char *valueData = (char *) env->GetByteArrayElements(value, 0);
 
-  leveldb::Slice keySlice (keyData, (size_t) env->GetArrayLength(key));
-  leveldb::Slice valueSlice (valueData, (size_t) env->GetArrayLength(value));
+    leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
+    leveldb::Slice valueSlice(valueData, (size_t) env->GetArrayLength(value));
 
-  leveldb::Status status = db->Put(writeOptions, keySlice, valueSlice);
+    leveldb::Status status = db->Put(writeOptions, keySlice, valueSlice);
 
-  env->ReleaseByteArrayElements(key, (jbyte*) keyData, 0);
-  env->ReleaseByteArrayElements(value, (jbyte*) valueData, 0);
+    env->ReleaseByteArrayElements(key, (jbyte *) keyData, 0);
+    env->ReleaseByteArrayElements(value, (jbyte *) valueData, 0);
 
-  throwExceptionFromStatus(env, status);
+    throwExceptionFromStatus(env, status);
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeWrite
-  (JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jlong nwb) {
+        (JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jlong nwb) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto *holder = (NDBHolder *) ndb;
 
-  leveldb::DB* db = holder->db;
+    leveldb::DB *db = holder->db;
 
-  leveldb::WriteOptions options;
-  options.sync = sync == JNI_TRUE;
+    leveldb::WriteOptions options;
+    options.sync = sync == JNI_TRUE;
 
-  leveldb::WriteBatch* wb = (leveldb::WriteBatch*) nwb;
+    auto *wb = (leveldb::WriteBatch *) nwb;
 
-  leveldb::Status status = db->Write(options, wb);
+    leveldb::Status status = db->Write(options, wb);
 
-  throwExceptionFromStatus(env, status);
+    throwExceptionFromStatus(env, status);
 }
 
 JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeGet
-(JNIEnv *env, jclass cself, jlong ndb, jbyteArray key, jlong nsnapshot) {
+        (JNIEnv *env, jclass cself, jlong ndb, jbyteArray key, jlong nsnapshot) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto *holder = (NDBHolder *) ndb;
 
-  leveldb::DB* db = holder->db;
+    leveldb::DB *db = holder->db;
 
-  leveldb::ReadOptions readOptions;
+    leveldb::ReadOptions readOptions;
 
-  readOptions.snapshot = (leveldb::Snapshot*) nsnapshot;
+    readOptions.snapshot = (leveldb::Snapshot *) nsnapshot;
 
-  const char* keyData = (char*) env->GetByteArrayElements(key, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
 
-  leveldb::Slice keySlice (keyData, env->GetArrayLength(key));
+    leveldb::Slice keySlice(keyData, env->GetArrayLength(key));
 
-  std::string value;
+    std::string value;
 
-  leveldb::Status status = db->Get(readOptions, keySlice, &value);
+    leveldb::Status status = db->Get(readOptions, keySlice, &value);
 
-  env->ReleaseByteArrayElements(key, (jbyte*) keyData, 0);
+    env->ReleaseByteArrayElements(key, (jbyte *) keyData, 0);
 
-  if (status.ok()) {
-    if (value.length() < 1) {
-      return 0;
+    if (status.ok()) {
+        if (value.length() < 1) {
+            return 0;
+        }
+
+        jbyteArray retval = env->NewByteArray(value.length());
+
+        env->SetByteArrayRegion(retval, 0, value.length(), (jbyte *) value.data());
+
+        return retval;
+    } else if (status.IsNotFound()) {
+        return 0;
     }
 
-    jbyteArray retval = env->NewByteArray(value.length());
+    throwExceptionFromStatus(env, status);
 
-    env->SetByteArrayRegion(retval, 0, value.length(), (jbyte*) value.data());
-
-    return retval;
-  } else if (status.IsNotFound()) {
     return 0;
-  }
-
-  throwExceptionFromStatus(env, status);
-
-  return 0;
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeDelete
-(JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jbyteArray key) {
+        (JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jbyteArray key) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto *holder = (NDBHolder *) ndb;
 
-  leveldb::DB* db = holder->db;
+    leveldb::DB *db = holder->db;
 
-  const char* keyData = (char*) env->GetByteArrayElements(key, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
 
-  leveldb::Slice keySlice (keyData, (size_t) env->GetArrayLength(key));
+    leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
 
-  leveldb::WriteOptions writeOptions;
-  writeOptions.sync = sync == JNI_TRUE;
+    leveldb::WriteOptions writeOptions;
+    writeOptions.sync = sync == JNI_TRUE;
 
-  leveldb::Status status = db->Delete(writeOptions, keySlice);
+    leveldb::Status status = db->Delete(writeOptions, keySlice);
 
-  env->ReleaseByteArrayElements(key, (jbyte*) keyData, 0);
+    env->ReleaseByteArrayElements(key, (jbyte *) keyData, 0);
 
-  throwExceptionFromStatus(env, status);
+    throwExceptionFromStatus(env, status);
 }
 
 JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeGetProperty
-(JNIEnv *env, jclass cself, jlong ndb, jbyteArray key) {
+        (JNIEnv *env, jclass cself, jlong ndb, jbyteArray key) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto *holder = (NDBHolder *) ndb;
 
-  leveldb::DB* db = holder->db;
+    leveldb::DB *db = holder->db;
 
-  const char* keyData = (char*) env->GetByteArrayElements(key, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
 
-  leveldb::Slice keySlice (keyData, (size_t) env->GetArrayLength(key));
+    leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
 
-  leveldb::ReadOptions readOptions;
+    leveldb::ReadOptions readOptions;
 
-  std::string value;
+    std::string value;
 
-  bool ok = db->GetProperty(keySlice, &value);
+    bool ok = db->GetProperty(keySlice, &value);
 
-  env->ReleaseByteArrayElements(key, (jbyte*) keyData, 0);
+    env->ReleaseByteArrayElements(key, (jbyte *) keyData, 0);
 
-  if (ok) {
-    if (value.length() < 1) {
-      return 0;
+    if (ok) {
+        if (value.length() < 1) {
+            return nullptr;
+        }
+
+        jbyteArray retval = env->NewByteArray(value.length());
+
+        env->SetByteArrayRegion(retval, 0, value.length(), (jbyte *) value.data());
+
+        return retval;
     }
 
-    jbyteArray retval = env->NewByteArray(value.length());
-
-    env->SetByteArrayRegion(retval, 0, value.length(), (jbyte*) value.data());
-
-    return retval;
-  }
-
-  return 0;
+    return nullptr;
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeDestroy
-(JNIEnv *env, jclass cself, jstring path) {
+        (JNIEnv *env, jclass cself, jstring path) {
 
-  const char *nativePath = env->GetStringUTFChars(path, 0);
+    const char *nativePath = env->GetStringUTFChars(path, 0);
 
-  leveldb::Status status = leveldb::DestroyDB(nativePath, leveldb::Options());
+    leveldb::Status status = leveldb::DestroyDB(nativePath, leveldb::Options());
 
-  env->ReleaseStringUTFChars(path, nativePath);
+    env->ReleaseStringUTFChars(path, nativePath);
 
-  throwExceptionFromStatus(env, status);
+    throwExceptionFromStatus(env, status);
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeRepair
-(JNIEnv *env, jclass cself, jstring path) {
+        (JNIEnv *env, jclass cself, jstring path) {
 
-  const char *nativePath = env->GetStringUTFChars(path, 0);
+    const char *nativePath = env->GetStringUTFChars(path, 0);
 
-  leveldb::Status status = leveldb::RepairDB(nativePath, leveldb::Options());
+    leveldb::Status status = leveldb::RepairDB(nativePath, leveldb::Options());
 
-  env->ReleaseStringUTFChars(path, nativePath);
+    env->ReleaseStringUTFChars(path, nativePath);
 
-  throwExceptionFromStatus(env, status);
+    throwExceptionFromStatus(env, status);
 }
 
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeIterate
-(JNIEnv *env, jclass cself, jlong ndb, jboolean fillCache, jlong nsnapshot) {
-  NDBHolder* holder = (NDBHolder*) ndb;
+        (JNIEnv *env, jclass cself, jlong ndb, jboolean fillCache, jlong nsnapshot) {
+    auto *holder = (NDBHolder *) ndb;
 
-  leveldb::DB* db = holder->db;
+    leveldb::DB *db = holder->db;
 
-  leveldb::ReadOptions options;
+    leveldb::ReadOptions options;
 
-  options.snapshot = (leveldb::Snapshot*) nsnapshot;
+    options.snapshot = (leveldb::Snapshot *) nsnapshot;
 
-  options.fill_cache = (bool) fillCache;
+    options.fill_cache = (bool) fillCache;
 
-  leveldb::Iterator* it = db->NewIterator(options);
+    leveldb::Iterator *it = db->NewIterator(options);
 
-  return (jlong) it;
+    return (jlong) it;
 }
 
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeSnapshot
-  (JNIEnv *env, jclass cself, jlong ndb) {
+        (JNIEnv *env, jclass cself, jlong ndb) {
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto *holder = (NDBHolder *) ndb;
 
-  leveldb::DB* db = holder->db;
+    leveldb::DB *db = holder->db;
 
-  return (jlong) db->GetSnapshot();
+    return (jlong) db->GetSnapshot();
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeReleaseSnapshot
-  (JNIEnv *env, jclass cself, jlong ndb, jlong nsnapshot) {
-  if (nsnapshot == 0) {
-    return;
-  }
+        (JNIEnv *env, jclass cself, jlong ndb, jlong nsnapshot) {
+    if (nsnapshot == 0) {
+        return;
+    }
 
-  NDBHolder* holder = (NDBHolder*) ndb;
+    auto *holder = (NDBHolder *) ndb;
 
-  leveldb::DB* db = holder->db;
+    leveldb::DB *db = holder->db;
 
-  db->ReleaseSnapshot((leveldb::Snapshot*) nsnapshot);
+    db->ReleaseSnapshot((leveldb::Snapshot *) nsnapshot);
 }
+
+#ifdef __cplusplus
+}
+#endif

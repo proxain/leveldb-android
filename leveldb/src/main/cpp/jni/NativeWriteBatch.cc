@@ -36,47 +36,55 @@
 #include <leveldb/options.h>
 #include <leveldb/write_batch.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBatch_nativeCreate
-(JNIEnv *env, jclass cself) {
+        (JNIEnv *env, jclass cself) {
 
-  leveldb::WriteBatch* WriteBatchImplementation = new leveldb::WriteBatch();
+    auto *WriteBatchImplementation = new leveldb::WriteBatch();
 
-  return (jlong) WriteBatchImplementation;
+    return (jlong) WriteBatchImplementation;
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBatch_nativePut
-(JNIEnv *env, jclass cself, jlong nwb, jbyteArray key, jbyteArray value) {
+        (JNIEnv *env, jclass cself, jlong nwb, jbyteArray key, jbyteArray value) {
 
-  leveldb::WriteBatch* wb = (leveldb::WriteBatch*) nwb;
+    auto *wb = (leveldb::WriteBatch *) nwb;
 
-  const char* keyData = (char*) env->GetByteArrayElements(key, 0);
-  const char* valueData = (char*) env->GetByteArrayElements(value, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
+    const char *valueData = (char *) env->GetByteArrayElements(value, 0);
 
-  leveldb::Slice keySlice (keyData, (size_t) env->GetArrayLength(key));
-  leveldb::Slice valueSlice (valueData, (size_t) env->GetArrayLength(value));
+    leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
+    leveldb::Slice valueSlice(valueData, (size_t) env->GetArrayLength(value));
 
-  wb->Put(keySlice, valueSlice);
+    wb->Put(keySlice, valueSlice);
 
-  env->ReleaseByteArrayElements(key, (jbyte*) keyData, 0);
-  env->ReleaseByteArrayElements(value, (jbyte*) valueData, 0);
+    env->ReleaseByteArrayElements(key, (jbyte *) keyData, 0);
+    env->ReleaseByteArrayElements(value, (jbyte *) valueData, 0);
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBatch_nativeDelete
-(JNIEnv *env, jclass cself, jlong nwb, jbyteArray key) {
+        (JNIEnv *env, jclass cself, jlong nwb, jbyteArray key) {
 
-  leveldb::WriteBatch* wb = (leveldb::WriteBatch*) nwb;
+    auto *wb = (leveldb::WriteBatch *) nwb;
 
-  const char* keyData = (char*) env->GetByteArrayElements(key, 0);
-  leveldb::Slice keySlice (keyData, (size_t) env->GetArrayLength(key));
+    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
+    leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
 
-  wb->Delete(keySlice);
+    wb->Delete(keySlice);
 
-  env->ReleaseByteArrayElements(key, (jbyte*) keyData, 0);
+    env->ReleaseByteArrayElements(key, (jbyte *) keyData, 0);
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBatch_nativeClose
-(JNIEnv *env, jclass cself, jlong nwb) {
-  if (nwb != 0) {
-    delete ((leveldb::WriteBatch*) nwb);
-  }
+        (JNIEnv *env, jclass cself, jlong nwb) {
+    if (nwb != 0) {
+        delete ((leveldb::WriteBatch *) nwb);
+    }
 }
+
+#ifdef __cplusplus
+}
+#endif
