@@ -40,171 +40,187 @@
 
 #include <android/log.h>
 
-extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeClose
-(JNIEnv *env, jclass cself, jlong nit) {
-  if (nit == 0) {
-    return;
-  }
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-  auto * it = (leveldb::Iterator*) nit;
+JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeClose
+        (JNIEnv *env, jclass cself, jlong nit) {
+    if (nit == 0) {
+        return;
+    }
 
-  leveldb::Status status = it->status();
+    auto *it = (leveldb::Iterator *) nit;
 
-  if (!status.ok()) {
-    __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld) about to close with status: %s",
-                        static_cast<long long int>(nit), status.ToString().data());
-  }
+    leveldb::Status status = it->status();
 
-  delete it;
+    if (!status.ok()) {
+        __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld) about to close with status: %s",
+                            static_cast<long long int>(nit), status.ToString().data());
+    }
+
+    delete it;
 }
 
-extern "C" JNIEXPORT jboolean JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeValid
-(JNIEnv *env, jclass cself, jlong nit) {
-  auto * it = (leveldb::Iterator*) nit;
+JNIEXPORT jboolean JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeValid
+        (JNIEnv *env, jclass cself, jlong nit) {
+    auto *it = (leveldb::Iterator *) nit;
 
-  auto retval = (jboolean) it->Valid();
+    auto retval = (jboolean) it->Valid();
 
-  leveldb::Status status = it->status();
+    leveldb::Status status = it->status();
 
-  if (!status.ok()) {
-    __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s", static_cast<long long int>(nit), status.ToString().data());
+    if (!status.ok()) {
+        __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s",
+                            static_cast<long long int>(nit), status.ToString().data());
 
-    // TODO: Probably throw Exception here?
-  }
+        // TODO: Probably throw Exception here?
+    }
 
-  return retval;
+    return retval;
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeek
-(JNIEnv *env, jclass cself, jlong nit, jbyteArray key) {
-  auto * it = (leveldb::Iterator*) nit;
+JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeek
+        (JNIEnv *env, jclass cself, jlong nit, jbyteArray key) {
+    auto *it = (leveldb::Iterator *) nit;
 
-  const char* keyData = (char*) env->GetByteArrayElements(key, 0);
-  leveldb::Slice keySlice (keyData, (size_t) env->GetArrayLength(key));
+    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
+    leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
 
-  it->Seek(keySlice);
+    it->Seek(keySlice);
 
-  env->ReleaseByteArrayElements(key, (jbyte*) keyData, 0);
+    env->ReleaseByteArrayElements(key, (jbyte *) keyData, 0);
 
-  leveldb::Status status = it->status();
+    leveldb::Status status = it->status();
 
-  if (!status.ok()) {
-    __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s", static_cast<long long int>(nit), status.ToString().data());
+    if (!status.ok()) {
+        __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s",
+                            static_cast<long long int>(nit), status.ToString().data());
 
-    // TODO: Probably throw Exception here?
-  }
+        // TODO: Probably throw Exception here?
+    }
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeekToFirst
-(JNIEnv *env, jclass cself, jlong nit) {
-  auto * it = (leveldb::Iterator*) nit;
+JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeekToFirst
+        (JNIEnv *env, jclass cself, jlong nit) {
+    auto *it = (leveldb::Iterator *) nit;
 
-  it->SeekToFirst();
+    it->SeekToFirst();
 
-  leveldb::Status status = it->status();
+    leveldb::Status status = it->status();
 
-  if (!status.ok()) {
-    __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s", static_cast<long long int>(nit), status.ToString().data());
+    if (!status.ok()) {
+        __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s",
+                            static_cast<long long int>(nit), status.ToString().data());
 
-    // TODO: Probably throw Exception here?
-  }
+        // TODO: Probably throw Exception here?
+    }
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeekToLast
-(JNIEnv *env, jclass cself, jlong nit) {
-  auto * it = (leveldb::Iterator*) nit;
+JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeekToLast
+        (JNIEnv *env, jclass cself, jlong nit) {
+    auto *it = (leveldb::Iterator *) nit;
 
-  it->SeekToLast();
+    it->SeekToLast();
 
-  leveldb::Status status = it->status();
+    leveldb::Status status = it->status();
 
-  if (!status.ok()) {
-    __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s", static_cast<long long int>(nit), status.ToString().data());
+    if (!status.ok()) {
+        __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s",
+                            static_cast<long long int>(nit), status.ToString().data());
 
-    // TODO: Probably throw Exception here?
-  }
+        // TODO: Probably throw Exception here?
+    }
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeNext
-(JNIEnv *env, jclass cself, jlong nit) {
-  auto * it = (leveldb::Iterator*) nit;
+JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeNext
+        (JNIEnv *env, jclass cself, jlong nit) {
+    auto *it = (leveldb::Iterator *) nit;
 
-  it->Next();
+    it->Next();
 
-  leveldb::Status status = it->status();
+    leveldb::Status status = it->status();
 
-  if (!status.ok()) {
-    __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s", static_cast<long long int>(nit), status.ToString().data());
+    if (!status.ok()) {
+        __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s",
+                            static_cast<long long int>(nit), status.ToString().data());
 
-    // TODO: Probably throw Exception here?
-  }
+        // TODO: Probably throw Exception here?
+    }
 }
 
-extern "C" JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativePrev
-(JNIEnv *env, jclass cself, jlong nit) {
-  auto * it = (leveldb::Iterator*) nit;
+JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativePrev
+        (JNIEnv *env, jclass cself, jlong nit) {
+    auto *it = (leveldb::Iterator *) nit;
 
-  it->Prev();
+    it->Prev();
 
-  leveldb::Status status = it->status();
+    leveldb::Status status = it->status();
 
-  if (!status.ok()) {
-    __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s", static_cast<long long int>(nit), status.ToString().data());
+    if (!status.ok()) {
+        __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s",
+                            static_cast<long long int>(nit), status.ToString().data());
 
-    // TODO: Probably throw Exception here?
-  }
+        // TODO: Probably throw Exception here?
+    }
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeKey
-(JNIEnv *env, jclass cself, jlong nit) {
-  auto * it = (leveldb::Iterator*) nit;
+JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeKey
+        (JNIEnv *env, jclass cself, jlong nit) {
+    auto *it = (leveldb::Iterator *) nit;
 
-  if (!it->Valid()) {
-    return nullptr;
-  }
+    if (!it->Valid()) {
+        return nullptr;
+    }
 
-  leveldb::Slice key = it->key();
+    leveldb::Slice key = it->key();
 
-  leveldb::Status status = it->status();
+    leveldb::Status status = it->status();
 
-  if (!status.ok()) {
-    __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s", static_cast<long long int>(nit), status.ToString().data());
+    if (!status.ok()) {
+        __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s",
+                            static_cast<long long int>(nit), status.ToString().data());
 
-    // TODO: Probably throw Exception here?
+        // TODO: Probably throw Exception here?
 
-    return nullptr;
-  }
+        return nullptr;
+    }
 
-  jbyteArray retval = env->NewByteArray(key.size());
+    jbyteArray retval = env->NewByteArray(key.size());
 
-  env->SetByteArrayRegion(retval, 0, key.size(), (jbyte*) key.data());
+    env->SetByteArrayRegion(retval, 0, key.size(), (jbyte *) key.data());
 
-  return retval;
+    return retval;
 }
 
-extern "C" JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeValue
-(JNIEnv *env, jclass cself, jlong nit) {
-  auto * it = (leveldb::Iterator*) nit;
+JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeValue
+        (JNIEnv *env, jclass cself, jlong nit) {
+    auto *it = (leveldb::Iterator *) nit;
 
-  if (!it->Valid()) {
-    return nullptr;
-  }
+    if (!it->Valid()) {
+        return nullptr;
+    }
 
-  leveldb::Slice value = it->value();
+    leveldb::Slice value = it->value();
 
-  leveldb::Status status = it->status();
+    leveldb::Status status = it->status();
 
-  if (!status.ok()) {
-    __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s", static_cast<long long int>(nit), status.ToString().data());
+    if (!status.ok()) {
+        __android_log_print(ANDROID_LOG_INFO, "com.github.leveldb:N", "Iterator(%lld): %s",
+                            static_cast<long long int>(nit), status.ToString().data());
 
-    // TODO: Probably throw Exception here?
+        // TODO: Probably throw Exception here?
 
-    return nullptr;
-  }
+        return nullptr;
+    }
 
-  jbyteArray retval = env->NewByteArray(value.size());
+    jbyteArray retval = env->NewByteArray(value.size());
 
-  env->SetByteArrayRegion(retval, 0, value.size(), (jbyte*) value.data());
+    env->SetByteArrayRegion(retval, 0, value.size(), (jbyte *) value.data());
 
-  return retval;
+    return retval;
 }
+
+#ifdef __cplusplus
+}
+#endif

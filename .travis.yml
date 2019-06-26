@@ -21,7 +21,7 @@ before_install:
   - jdk_switcher use oraclejdk8
   - java -version
   - android list targets
-  - echo no | android create avd --force -n test -t android-28 --abi $ANDROID_ABI
+  - echo no | android create avd --force -n test -t android-28 --abi google_apis/$ANDROID_ABI
   - emulator -avd test -no-skin -no-audio -no-window &
   - wget https://dl.google.com/android/repository/android-ndk-r20-linux-x86_64.zip
   - unzip -q android-ndk-r20-linux-x86_64.zip
