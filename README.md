@@ -170,13 +170,7 @@ LevelDB.mock();
 
 ## Building
 
-Until Google (or someone else) fixes the Android Gradle build tools to properly
-support NDK, this is the way to build this project.
-
-1. Install the [NDK](https://developer.android.com/tools/sdk/ndk/index.html)
-. (Tested with ndk-r14d.)
-2. Add NDK to `$PATH`.
-3. Build with Gradle (`preBuild` depends on `preBuildLevelDB`)
+Project can be build with ndk-bundle and cmake installed from Android Studio SDK Manager.
 
 ## License
 
