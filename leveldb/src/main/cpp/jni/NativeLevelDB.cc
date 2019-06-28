@@ -32,61 +32,13 @@
  */
 
 #include <jni/NativeLevelDB.h>
+#include <jni/LevelDBHelper.h>
 
 #include <iostream>
-
 #include <leveldb/db.h>
 #include <leveldb/write_batch.h>
 #include <leveldb/env.h>
 #include <leveldb/cache.h>
-
-// Redirects leveldb's logging to the Android logger.
-//class AndroidLogger : public leveldb::Logger {
-//public:
-//    void Logv(const char* format, va_list ap) override {
-//        __android_log_vprint(ANDROID_LOG_INFO, "com.github.hf.leveldb:N", format, ap);
-//    }
-//};
-
-// Holds references to heap-allocated native objects so that they can be
-// closed in Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeClose.
-class NDBHolder {
-public:
-    NDBHolder(leveldb::DB *ldb/*, AndroidLogger* llogger*/, leveldb::Cache *lcache) : db(ldb)/*, logger(llogger)*/,
-                                                                                      cache(lcache) {}
-
-    leveldb::DB *db;
-//  AndroidLogger* logger;
-
-    leveldb::Cache *cache;
-};
-
-// Throws the appropriate Java exception for the given status. Make sure you
-// check IsNotFound() and similar possible non-exception statuses before calling
-// this. Please release all Java references before calling this.
-void throwExceptionFromStatus(JNIEnv *env, leveldb::Status &status) {
-    if (status.ok()) {
-        return;
-    }
-
-    if (status.IsIOError()) {
-        jclass ioExceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBIOException");
-
-        env->ThrowNew(ioExceptionClass, status.ToString().data());
-    } else if (status.IsCorruption()) {
-        jclass corruptionExceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBCorruptionException");
-
-        env->ThrowNew(corruptionExceptionClass, status.ToString().data());
-    } else if (status.IsNotFound()) {
-        jclass notFoundExceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBNotFoundException");
-
-        env->ThrowNew(notFoundExceptionClass, status.ToString().data());
-    } else {
-        jclass exceptionClass = env->FindClass("com/github/hf/leveldb/exception/LevelDBException");
-
-        env->ThrowNew(exceptionClass, status.ToString().data());
-    }
-}
 
 #ifdef __cplusplus
 extern "C" {
@@ -100,7 +52,7 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
 
     leveldb::DB *db;
 
-//    auto * logger = new AndroidLogger();
+    auto * logger = new AndroidLogger();
     leveldb::Cache *cache = nullptr;
 
     if (cacheSize != 0) {
@@ -109,7 +61,7 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
 
     leveldb::Options options;
     options.create_if_missing = createIfMissing == JNI_TRUE;
-//  options.info_log = logger;
+    options.info_log = logger;
 
     if (cache != nullptr) {
         options.block_cache = cache;
@@ -128,11 +80,11 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
     env->ReleaseStringUTFChars(path, nativePath);
 
     if (status.ok()) {
-        auto *holder = new NDBHolder(db/*, logger*/, cache);
+        auto *holder = new NDBHolder(db, logger, cache);
 
         return (jlong) holder;
     } else {
-//    delete logger;
+        delete logger;
         delete cache;
     }
 
@@ -148,7 +100,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
 
         delete holder->db;
         delete holder->cache;
-//    delete holder->logger;
+        delete holder->logger;
         delete holder;
     }
 }
