@@ -41,6 +41,9 @@ import com.github.hf.leveldb.test.common.DatabaseTestCase;
 import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertThat;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertFalse;
+
 /**
  * Created by hermann on 8/16/14.
  */
@@ -96,8 +99,29 @@ public class NativeOpenCloseTest extends DatabaseTestCase {
         assertThat(threw).isTrue();
 
         ndbA.close();
-        ndbA.close();
 
         assertThat(dbFile.exists()).isTrue();
+    }
+
+    public void testExceptionIfFound() throws Exception {
+        assertFalse(dbFile.exists());
+
+        boolean threw = false;
+
+        NativeLevelDB ndbA = new NativeLevelDB(dbFile.getAbsolutePath(), LevelDB.configure().createIfMissing(true).exceptionIfExists(true));
+
+        assertTrue(dbFile.exists());
+
+        try {
+          NativeLevelDB ndbB = new NativeLevelDB(dbFile.getAbsolutePath(), LevelDB.configure().createIfMissing(true).exceptionIfExists(true));
+        } catch (LevelDBException e) {
+          threw = true;
+        }
+
+        assertTrue(dbFile.exists());
+
+        ndbA.close();
+
+        assertTrue(threw);
     }
 }

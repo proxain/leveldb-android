@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (ZIIILjava/lang/String;)J
  */
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeOpen
-  (JNIEnv *, jclass, jboolean, jint, jint, jint, jstring);
+  (JNIEnv *, jclass __unused __unused, jboolean, jint, jint, jint, jstring);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeLevelDB
@@ -21,7 +21,7 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeClose
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv  __unused *, jclass __unused, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeLevelDB
@@ -29,7 +29,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
  * Signature: (JZ[B[B)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativePut
-  (JNIEnv *, jclass, jlong, jboolean, jbyteArray, jbyteArray);
+  (JNIEnv *, jclass __unused, jlong, jboolean, jbyteArray, jbyteArray);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeLevelDB
@@ -37,7 +37,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
  * Signature: (JZ[B)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeDelete
-  (JNIEnv *, jclass, jlong, jboolean, jbyteArray);
+  (JNIEnv *, jclass __unused, jlong, jboolean, jbyteArray);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeLevelDB
@@ -45,7 +45,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
  * Signature: (JZJ)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeWrite
-  (JNIEnv *, jclass, jlong, jboolean, jlong);
+  (JNIEnv *, jclass __unused, jlong, jboolean, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeLevelDB
@@ -53,7 +53,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
  * Signature: (J[BJ)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeGet
-  (JNIEnv *, jclass, jlong, jbyteArray, jlong);
+  (JNIEnv *, jclass __unused, jlong, jbyteArray, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeLevelDB
@@ -61,7 +61,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLev
  * Signature: (J[B)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeGetProperty
-  (JNIEnv *, jclass, jlong, jbyteArray);
+  (JNIEnv *, jclass __unused, jlong, jbyteArray);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeLevelDB
@@ -69,7 +69,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLev
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeDestroy
-  (JNIEnv *, jclass, jstring);
+  (JNIEnv *, jclass __unused, jstring);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeLevelDB
@@ -77,7 +77,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeRepair
-  (JNIEnv *, jclass, jstring);
+  (JNIEnv *, jclass __unused, jstring);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeLevelDB
@@ -85,7 +85,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
  * Signature: (JZJ)J
  */
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeIterate
-  (JNIEnv *, jclass, jlong, jboolean, jlong);
+  (JNIEnv  __unused *, jclass __unused, jlong, jboolean, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeLevelDB
@@ -93,7 +93,7 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
  * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeSnapshot
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv  __unused *, jclass __unused, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeLevelDB
@@ -101,7 +101,7 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
  * Signature: (JJ)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeReleaseSnapshot
-  (JNIEnv *, jclass, jlong, jlong);
+  (JNIEnv  __unused *, jclass __unused, jlong, jlong);
 
 #ifdef __cplusplus
 }

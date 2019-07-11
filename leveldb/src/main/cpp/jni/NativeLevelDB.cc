@@ -1,4 +1,4 @@
-/*
+#include <climits>/*
  * Stojan Dimitrovski
  *
  * Copyright (c) 2014, Stojan Dimitrovski <sdimitrovski@gmail.com>
@@ -45,10 +45,10 @@ extern "C" {
 #endif
 
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeOpen
-        (JNIEnv *env, jclass cself, jboolean createIfMissing, jint cacheSize, jint blockSize, jint writeBufferSize,
+        (JNIEnv *env, jclass  __unused cself, jboolean createIfMissing, jint cacheSize, jint blockSize, jint writeBufferSize,
          jstring path) {
 
-    const char *nativePath = env->GetStringUTFChars(path, 0);
+    const char *nativePath = env->GetStringUTFChars(path, nullptr);
 
     leveldb::DB *db;
 
@@ -94,7 +94,7 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeClose
-        (JNIEnv *env, jclass cself, jlong ndb) {
+        (JNIEnv  __unused *env, jclass  __unused cself, jlong ndb) {
     if (ndb != 0) {
         auto holder = (NDBHolder *) ndb;
 
@@ -106,7 +106,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativePut
-        (JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jbyteArray key, jbyteArray value) {
+        (JNIEnv *env, jclass  __unused cself, jlong ndb, jboolean sync, jbyteArray key, jbyteArray value) {
 
     auto *holder = (NDBHolder *) ndb;
 
@@ -115,8 +115,8 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
     leveldb::WriteOptions writeOptions;
     writeOptions.sync = sync == JNI_TRUE;
 
-    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
-    const char *valueData = (char *) env->GetByteArrayElements(value, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, nullptr);
+    const char *valueData = (char *) env->GetByteArrayElements(value, nullptr);
 
     leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
     leveldb::Slice valueSlice(valueData, (size_t) env->GetArrayLength(value));
@@ -130,7 +130,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeWrite
-        (JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jlong nwb) {
+        (JNIEnv *env, jclass  __unused cself, jlong ndb, jboolean sync, jlong nwb) {
 
     auto *holder = (NDBHolder *) ndb;
 
@@ -147,7 +147,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
 }
 
 JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeGet
-        (JNIEnv *env, jclass cself, jlong ndb, jbyteArray key, jlong nsnapshot) {
+        (JNIEnv *env, jclass  __unused cself, jlong ndb, jbyteArray key, jlong nsnapshot) {
 
     auto *holder = (NDBHolder *) ndb;
 
@@ -157,9 +157,9 @@ JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLev
 
     readOptions.snapshot = (leveldb::Snapshot *) nsnapshot;
 
-    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, nullptr);
 
-    leveldb::Slice keySlice(keyData, env->GetArrayLength(key));
+    leveldb::Slice keySlice(keyData, static_cast<size_t>(env->GetArrayLength(key)));
 
     std::string value;
 
@@ -169,7 +169,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLev
 
     if (status.ok()) {
         if (value.length() < 1) {
-            return 0;
+            return nullptr;
         }
 
         jbyteArray retval = env->NewByteArray(value.length());
@@ -178,22 +178,22 @@ JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLev
 
         return retval;
     } else if (status.IsNotFound()) {
-        return 0;
+        return nullptr;
     }
 
     throwExceptionFromStatus(env, status);
 
-    return 0;
+    return nullptr;
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeDelete
-        (JNIEnv *env, jclass cself, jlong ndb, jboolean sync, jbyteArray key) {
+        (JNIEnv *env, jclass  __unused cself, jlong ndb, jboolean sync, jbyteArray key) {
 
     auto *holder = (NDBHolder *) ndb;
 
     leveldb::DB *db = holder->db;
 
-    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, nullptr);
 
     leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
 
@@ -208,17 +208,15 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
 }
 
 JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeGetProperty
-        (JNIEnv *env, jclass cself, jlong ndb, jbyteArray key) {
+        (JNIEnv *env, jclass  __unused cself, jlong ndb, jbyteArray key) {
 
     auto *holder = (NDBHolder *) ndb;
 
     leveldb::DB *db = holder->db;
 
-    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, nullptr);
 
     leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
-
-    leveldb::ReadOptions readOptions;
 
     std::string value;
 
@@ -242,9 +240,9 @@ JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeLev
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeDestroy
-        (JNIEnv *env, jclass cself, jstring path) {
+        (JNIEnv *env, jclass  __unused cself, jstring path) {
 
-    const char *nativePath = env->GetStringUTFChars(path, 0);
+    const char *nativePath = env->GetStringUTFChars(path, nullptr);
 
     leveldb::Status status = leveldb::DestroyDB(nativePath, leveldb::Options());
 
@@ -254,9 +252,9 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeRepair
-        (JNIEnv *env, jclass cself, jstring path) {
+        (JNIEnv *env, jclass  __unused cself, jstring path) {
 
-    const char *nativePath = env->GetStringUTFChars(path, 0);
+    const char *nativePath = env->GetStringUTFChars(path, nullptr);
 
     leveldb::Status status = leveldb::RepairDB(nativePath, leveldb::Options());
 
@@ -266,7 +264,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_n
 }
 
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeIterate
-        (JNIEnv *env, jclass cself, jlong ndb, jboolean fillCache, jlong nsnapshot) {
+        (JNIEnv  __unused *env, jclass  __unused cself, jlong ndb, jboolean fillCache, jlong nsnapshot) {
     auto *holder = (NDBHolder *) ndb;
 
     leveldb::DB *db = holder->db;
@@ -283,7 +281,7 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
 }
 
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeSnapshot
-        (JNIEnv *env, jclass cself, jlong ndb) {
+        (JNIEnv  __unused *env, jclass  __unused cself, jlong ndb) {
 
     auto *holder = (NDBHolder *) ndb;
 
@@ -293,7 +291,7 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeLevelDB_nativeReleaseSnapshot
-        (JNIEnv *env, jclass cself, jlong ndb, jlong nsnapshot) {
+        (JNIEnv  __unused *env, jclass  __unused cself, jlong ndb, jlong nsnapshot) {
     if (nsnapshot == 0) {
         return;
     }

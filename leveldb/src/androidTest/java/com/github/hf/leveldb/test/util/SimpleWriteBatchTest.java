@@ -117,4 +117,8 @@ public class SimpleWriteBatchTest extends TestCase {
         assertTrue(threw);
         assertEquals(2, writeBatch.getAllOperations().size());
     }
+
+    public void testKeyValueOperations() {
+
+    }
 }

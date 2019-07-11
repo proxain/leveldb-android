@@ -113,8 +113,8 @@ public class SimpleWriteBatch implements WriteBatch {
      * SimpleWriteBatch#write(LevelDB, boolean)} to write it to the database.
      */
     public SimpleWriteBatch(LevelDB levelDB) {
-        levelDBWR = new WeakReference<LevelDB>(levelDB);
-        operations = new LinkedList<WriteBatch.Operation>();
+        levelDBWR = new WeakReference<>(levelDB);
+        operations = new LinkedList<>();
     }
 
     /**
@@ -122,12 +122,12 @@ public class SimpleWriteBatch implements WriteBatch {
      */
     @Override
     public SimpleWriteBatch put(byte[] key, byte[] value) {
-        if (value == null) {
-            return del(key);
-        }
-
         if (key == null) {
             throw new IllegalArgumentException("Key must not be null.");
+        }
+
+        if (value == null) {
+            return del(key);
         }
 
         operations.add(Operation.put(key, value));
@@ -176,7 +176,7 @@ public class SimpleWriteBatch implements WriteBatch {
      */
     @Override
     public Collection<WriteBatch.Operation> getAllOperations() {
-        return new ArrayList<WriteBatch.Operation>(operations);
+        return new ArrayList<>(operations);
     }
 
     /**

@@ -186,7 +186,7 @@ public class NativeLevelDB extends LevelDB {
     /**
      * Gets the value associated with the key, or <tt>null</tt>.
      *
-     * @param key the key
+     * @param key      the key
      * @param snapshot the snapshot from which to read the pair, or null
      * @return the value, or <tt>null</tt>
      * @throws LevelDBException
@@ -252,7 +252,7 @@ public class NativeLevelDB extends LevelDB {
      *
      * @param key the key
      * @return property data, or <tt>null</tt>
-     * @throws LevelDBClosedException
+     * @throws LevelDBClosedException if DB is closed
      */
     @Override
     public byte[] getPropertyBytes(byte[] key) throws LevelDBClosedException {
@@ -270,12 +270,12 @@ public class NativeLevelDB extends LevelDB {
     /**
      * Creates a new {@link com.github.hf.leveldb.Iterator} that iterates over this database.
      *
-     * The returned iterator is not thread safe and must be closed with {@link com.github.hf.leveldb.Iterator#close()} before closing this
-     * database.
+     * The returned iterator is not thread safe and must be closed with {@link com.github.hf.leveldb.Iterator#close()}
+     * before closing this database.
      *
      * @param fillCache whether iterating fills the internal cache
      * @return a new iterator
-     * @throws LevelDBClosedException
+     * @throws LevelDBClosedException if DB is closed
      */
     @Override
     public Iterator iterator(boolean fillCache, Snapshot snapshot) throws LevelDBSnapshotOwnershipException, LevelDBClosedException {
@@ -309,7 +309,7 @@ public class NativeLevelDB extends LevelDB {
     /**
      * Set the path which opens this database.
      *
-     * @param path
+     * @param path which opens this database
      */
     @Override
     protected void setPath(String path) {
@@ -327,7 +327,7 @@ public class NativeLevelDB extends LevelDB {
     }
 
     @Override
-    public Snapshot obtainSnapshot() throws LevelDBClosedException {
+    public Snapshot obtainSnapshot() {
         return new NativeSnapshot(this, nativeSnapshot(ndb));
     }
 
@@ -359,7 +359,7 @@ public class NativeLevelDB extends LevelDB {
      *
      * Don't call this outside a synchronized context.
      *
-     * @throws LevelDBClosedException
+     * @throws LevelDBClosedException if DB is closed
      */
     protected void checkIfClosed() throws LevelDBClosedException {
         if (isClosed()) {
@@ -387,7 +387,7 @@ public class NativeLevelDB extends LevelDB {
     /**
      * Natively writes key-value pair to the database. Pointer is unchecked.
      *
-     * @param ndb
+     * @param ndb pointer to C++ object
      * @param sync
      * @param key
      * @param value
@@ -452,5 +452,6 @@ public class NativeLevelDB extends LevelDB {
     private static native long nativeIterate(long ndb, boolean fillCache, long nsnapshot);
 
     private static native long nativeSnapshot(long ndb);
+
     private static native void nativeReleaseSnapshot(long ndb, long nsnapshot);
 }

@@ -63,9 +63,10 @@ public class NativeIterator extends Iterator {
      * Whether this pointer is valid. An iterator is valid iff it is positioned over a key-value pair.
      *
      * @return whether the iterator is valid
-     * @throws com.github.hf.leveldb.exception.LevelDBClosedException
+     * @throws com.github.hf.leveldb.exception.LevelDBClosedException if DB is closed
      */
-    @Override public boolean isValid() throws LevelDBClosedException {
+    @Override
+    public boolean isValid() throws LevelDBClosedException {
         checkIfClosed();
 
         return nativeValid(this.nit);
@@ -74,9 +75,10 @@ public class NativeIterator extends Iterator {
     /**
      * Seeks to the first key-value pair in the database.
      *
-     * @throws com.github.hf.leveldb.exception.LevelDBClosedException
+     * @throws com.github.hf.leveldb.exception.LevelDBClosedException if DB is closed
      */
-    @Override public void seekToFirst() throws LevelDBClosedException {
+    @Override
+    public void seekToFirst() throws LevelDBClosedException {
         checkIfClosed();
 
         nativeSeekToFirst(this.nit);
@@ -87,9 +89,10 @@ public class NativeIterator extends Iterator {
      *
      * NB: Reverse iteration is somewhat slower than forward iteration.
      *
-     * @throws com.github.hf.leveldb.exception.LevelDBClosedException
+     * @throws com.github.hf.leveldb.exception.LevelDBClosedException if DB is closed
      */
-    @Override public void seekToLast() throws LevelDBClosedException {
+    @Override
+    public void seekToLast() throws LevelDBClosedException {
         checkIfClosed();
 
         nativeSeekToLast(this.nit);
@@ -99,9 +102,10 @@ public class NativeIterator extends Iterator {
      * Seek to the given key, or right after it.
      *
      * @param key the key, never <tt>null</tt>
-     * @throws com.github.hf.leveldb.exception.LevelDBClosedException
+     * @throws com.github.hf.leveldb.exception.LevelDBClosedException if DB is closed
      */
-    @Override public void seek(byte[] key) throws LevelDBClosedException {
+    @Override
+    public void seek(byte[] key) throws LevelDBClosedException {
         checkIfClosed();
 
         if (key == null) {
@@ -116,9 +120,10 @@ public class NativeIterator extends Iterator {
      *
      * Requires: {@link #isValid()}
      *
-     * @throws com.github.hf.leveldb.exception.LevelDBClosedException
+     * @throws com.github.hf.leveldb.exception.LevelDBClosedException if DB is closed
      */
-    @Override public void next() throws LevelDBIteratorNotValidException, LevelDBClosedException {
+    @Override
+    public void next() throws LevelDBIteratorNotValidException, LevelDBClosedException {
         checkIfClosed();
 
         if (!isValid()) {
@@ -133,9 +138,10 @@ public class NativeIterator extends Iterator {
      *
      * Requires: {@link #isValid()}
      *
-     * @throws com.github.hf.leveldb.exception.LevelDBClosedException
+     * @throws com.github.hf.leveldb.exception.LevelDBClosedException if DB is closed
      */
-    @Override public void previous() throws LevelDBIteratorNotValidException, LevelDBClosedException {
+    @Override
+    public void previous() throws LevelDBIteratorNotValidException, LevelDBClosedException {
         checkIfClosed();
 
         if (!isValid()) {
@@ -151,9 +157,10 @@ public class NativeIterator extends Iterator {
      * Requires: {@link #isValid()}
      *
      * @return the key under the iterator, <tt>null</tt> if invalid
-     * @throws com.github.hf.leveldb.exception.LevelDBClosedException
+     * @throws com.github.hf.leveldb.exception.LevelDBClosedException if DB is closed
      */
-    @Override public byte[] key() throws LevelDBIteratorNotValidException, LevelDBClosedException {
+    @Override
+    public byte[] key() throws LevelDBIteratorNotValidException, LevelDBClosedException {
         checkIfClosed();
 
         if (!isValid()) {
@@ -169,9 +176,10 @@ public class NativeIterator extends Iterator {
      * Requires: {@link #isValid()}
      *
      * @return the value under the iterator, <tt>null</tt> if invalid
-     * @throws com.github.hf.leveldb.exception.LevelDBClosedException
+     * @throws com.github.hf.leveldb.exception.LevelDBClosedException if DB is closed
      */
-    @Override public byte[] value() throws LevelDBIteratorNotValidException, LevelDBClosedException {
+    @Override
+    public byte[] value() throws LevelDBIteratorNotValidException, LevelDBClosedException {
         checkIfClosed();
 
         if (!isValid()) {
@@ -184,9 +192,10 @@ public class NativeIterator extends Iterator {
     /**
      * Whether this iterator has been closed.
      *
-     * @return
+     * @return true if iterator is closed, false elsewhere
      */
-    @Override public boolean isClosed() {
+    @Override
+    public boolean isClosed() {
         return nit == 0;
     }
 
@@ -207,12 +216,18 @@ public class NativeIterator extends Iterator {
     /**
      * Checks if this iterator has been closed.
      *
-     * @throws com.github.hf.leveldb.exception.LevelDBClosedException
+     * @throws com.github.hf.leveldb.exception.LevelDBClosedException if DB is closed
      */
     private void checkIfClosed() throws LevelDBClosedException {
         if (isClosed()) {
             throw new LevelDBClosedException("Iterator has been closed.");
         }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        close();
     }
 
     private static native void nativeClose(long nit);

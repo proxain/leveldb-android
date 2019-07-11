@@ -48,12 +48,7 @@ public final class Bytes {
      *
      * @see #lexicographicCompare(byte[], byte[])
      */
-    public static final Comparator<byte[]> COMPARATOR = new Comparator<byte[]>() {
-        @Override
-        public int compare(byte[] a, byte[] b) {
-            return lexicographicCompare(a, b);
-        }
-    };
+    public static final Comparator<byte[]> COMPARATOR = Bytes::lexicographicCompare;
 
     /**
      * Lexicographically compares two byte arrays, the way the default comparator in a

@@ -50,7 +50,7 @@ public class MockLevelDB extends LevelDB {
 
     protected volatile boolean closed;
 
-    protected final SortedMap<byte[], byte[]> map = new TreeMap<byte[], byte[]>(Bytes.COMPARATOR);
+    protected final SortedMap<byte[], byte[]> map = new TreeMap<>(Bytes.COMPARATOR);
 
     @Override
     public void close() {
@@ -142,12 +142,12 @@ public class MockLevelDB extends LevelDB {
     }
 
     @Override
-    public byte[] getPropertyBytes(byte[] key) throws LevelDBClosedException {
+    public byte[] getPropertyBytes(byte[] key) {
         throw new UnsupportedOperationException("Mock LevelDB does not support properties.");
     }
 
     @Override
-    public Iterator iterator(boolean fillCache, Snapshot snapshot) throws LevelDBSnapshotOwnershipException, LevelDBClosedException {
+    public Iterator iterator(boolean fillCache, Snapshot snapshot) throws LevelDBSnapshotOwnershipException {
         if (snapshot != null) {
             if (!(snapshot instanceof MockSnapshot)) {
                 throw new LevelDBSnapshotOwnershipException();
@@ -167,7 +167,7 @@ public class MockLevelDB extends LevelDB {
     }
 
     @Override
-    public synchronized Iterator iterator(boolean fillCache) throws LevelDBClosedException {
+    public synchronized Iterator iterator(boolean fillCache) {
         return new MockIterator(map);
     }
 
@@ -187,7 +187,7 @@ public class MockLevelDB extends LevelDB {
     }
 
     @Override
-    public Snapshot obtainSnapshot() throws LevelDBClosedException {
+    public Snapshot obtainSnapshot() {
         return new MockSnapshot(this);
     }
 
@@ -212,7 +212,7 @@ public class MockLevelDB extends LevelDB {
         }
     }
 
-    protected void checkIfClosed() throws LevelDBClosedException {
+    private void checkIfClosed() throws LevelDBClosedException {
         if (closed) {
             throw new LevelDBClosedException("Mock LevelDB has been closed.");
         }

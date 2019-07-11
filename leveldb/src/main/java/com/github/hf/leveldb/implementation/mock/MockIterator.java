@@ -50,11 +50,11 @@ public class MockIterator extends Iterator {
     protected final SortedMap<byte[], byte[]> snapshot;
     protected final ArrayList<byte[]> keys;
 
-    int position = 0;
+    private int position = 0;
 
-    public MockIterator(SortedMap<byte[], byte[]> map) {
-        this.snapshot = Collections.unmodifiableSortedMap(new TreeMap<byte[], byte[]>(map));
-        this.keys = new ArrayList<byte[]>(map.keySet());
+    MockIterator(SortedMap<byte[], byte[]> map) {
+        this.snapshot = Collections.unmodifiableSortedMap(new TreeMap<>(map));
+        this.keys = new ArrayList<>(map.keySet());
 
         Collections.sort(this.keys, Bytes.COMPARATOR);
     }
@@ -145,7 +145,7 @@ public class MockIterator extends Iterator {
         closed = true;
     }
 
-    protected void checkIfClosed() throws LevelDBClosedException {
+    private void checkIfClosed() throws LevelDBClosedException {
         if (closed) {
             throw new LevelDBClosedException("Iterator has been closed.");
         }

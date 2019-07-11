@@ -44,7 +44,7 @@ public final class NativeSnapshot extends Snapshot {
     private volatile long nsnapshot;
 
     protected NativeSnapshot(NativeLevelDB owner, long nsnapshot) {
-        this.owner = new WeakReference<LevelDB>(owner);
+        this.owner = new WeakReference<>(owner);
         this.nsnapshot = nsnapshot;
     }
 

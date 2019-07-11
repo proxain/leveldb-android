@@ -1,4 +1,4 @@
-/*
+#include <climits>/*
  * Stojan Dimitrovski
  *
  * Copyright (c) 2014, Stojan Dimitrovski <sdimitrovski@gmail.com>
@@ -45,7 +45,7 @@ extern "C" {
 #endif
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeClose
-        (JNIEnv *env, jclass cself, jlong nit) {
+        (JNIEnv  __unused *env, jclass  __unused cself, jlong nit) {
     if (nit == 0) {
         return;
     }
@@ -63,7 +63,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
 }
 
 JNIEXPORT jboolean JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeValid
-        (JNIEnv *env, jclass cself, jlong nit) {
+        (JNIEnv  __unused *env, jclass  __unused cself, jlong nit) {
     auto *it = (leveldb::Iterator *) nit;
 
     auto retval = (jboolean) it->Valid();
@@ -81,10 +81,10 @@ JNIEXPORT jboolean JNICALL Java_com_github_hf_leveldb_implementation_NativeItera
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeek
-        (JNIEnv *env, jclass cself, jlong nit, jbyteArray key) {
+        (JNIEnv *env, jclass  __unused cself, jlong nit, jbyteArray key) {
     auto *it = (leveldb::Iterator *) nit;
 
-    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, nullptr);
     leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
 
     it->Seek(keySlice);
@@ -102,7 +102,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeekToFirst
-        (JNIEnv *env, jclass cself, jlong nit) {
+        (JNIEnv  __unused *env, jclass  __unused cself, jlong nit) {
     auto *it = (leveldb::Iterator *) nit;
 
     it->SeekToFirst();
@@ -118,7 +118,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeekToLast
-        (JNIEnv *env, jclass cself, jlong nit) {
+        (JNIEnv  __unused *env, jclass  __unused cself, jlong nit) {
     auto *it = (leveldb::Iterator *) nit;
 
     it->SeekToLast();
@@ -134,7 +134,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeNext
-        (JNIEnv *env, jclass cself, jlong nit) {
+        (JNIEnv  __unused *env, jclass  __unused cself, jlong nit) {
     auto *it = (leveldb::Iterator *) nit;
 
     it->Next();
@@ -150,7 +150,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativePrev
-        (JNIEnv *env, jclass cself, jlong nit) {
+        (JNIEnv  __unused *env, jclass  __unused cself, jlong nit) {
     auto *it = (leveldb::Iterator *) nit;
 
     it->Prev();
@@ -166,7 +166,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
 }
 
 JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeKey
-        (JNIEnv *env, jclass cself, jlong nit) {
+        (JNIEnv *env, jclass  __unused cself, jlong nit) {
     auto *it = (leveldb::Iterator *) nit;
 
     if (!it->Valid()) {
@@ -194,7 +194,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeIte
 }
 
 JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeValue
-        (JNIEnv *env, jclass cself, jlong nit) {
+        (JNIEnv *env, jclass  __unused cself, jlong nit) {
     auto *it = (leveldb::Iterator *) nit;
 
     if (!it->Valid()) {

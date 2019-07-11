@@ -1,4 +1,4 @@
-/*
+#include <climits>/*
  * Stojan Dimitrovski
  *
  * Copyright (c) 2014, Stojan Dimitrovski <sdimitrovski@gmail.com>
@@ -41,7 +41,7 @@ extern "C" {
 #endif
 
 JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBatch_nativeCreate
-        (JNIEnv *env, jclass cself) {
+        (JNIEnv  __unused *env, jclass  __unused cself) {
 
     auto *WriteBatchImplementation = new leveldb::WriteBatch();
 
@@ -49,12 +49,12 @@ JNIEXPORT jlong JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBat
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBatch_nativePut
-        (JNIEnv *env, jclass cself, jlong nwb, jbyteArray key, jbyteArray value) {
+        (JNIEnv *env, jclass  __unused cself, jlong nwb, jbyteArray key, jbyteArray value) {
 
     auto *wb = (leveldb::WriteBatch *) nwb;
 
-    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
-    const char *valueData = (char *) env->GetByteArrayElements(value, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, nullptr);
+    const char *valueData = (char *) env->GetByteArrayElements(value, nullptr);
 
     leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
     leveldb::Slice valueSlice(valueData, (size_t) env->GetArrayLength(value));
@@ -66,11 +66,11 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBatc
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBatch_nativeDelete
-        (JNIEnv *env, jclass cself, jlong nwb, jbyteArray key) {
+        (JNIEnv *env, jclass  __unused cself, jlong nwb, jbyteArray key) {
 
     auto *wb = (leveldb::WriteBatch *) nwb;
 
-    const char *keyData = (char *) env->GetByteArrayElements(key, 0);
+    const char *keyData = (char *) env->GetByteArrayElements(key, nullptr);
     leveldb::Slice keySlice(keyData, (size_t) env->GetArrayLength(key));
 
     wb->Delete(keySlice);
@@ -79,7 +79,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBatc
 }
 
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeWriteBatch_nativeClose
-        (JNIEnv *env, jclass cself, jlong nwb) {
+        (JNIEnv  __unused *env, jclass  __unused cself, jlong nwb) {
     if (nwb != 0) {
         delete ((leveldb::WriteBatch *) nwb);
     }

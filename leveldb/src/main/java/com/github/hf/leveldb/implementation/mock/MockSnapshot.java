@@ -48,9 +48,9 @@ public final class MockSnapshot extends Snapshot {
     private volatile SortedMap<byte[], byte[]> snapshot;
 
     public MockSnapshot(MockLevelDB mockLevelDB) {
-        this.owner = new WeakReference<LevelDB>(mockLevelDB);
+        this.owner = new WeakReference<>(mockLevelDB);
 
-        this.snapshot = Collections.unmodifiableSortedMap(new TreeMap<byte[], byte[]>(mockLevelDB.map));
+        this.snapshot = Collections.unmodifiableSortedMap(new TreeMap<>(mockLevelDB.map));
 
         this.released = false;
     }
@@ -62,7 +62,7 @@ public final class MockSnapshot extends Snapshot {
         return released || owner == null || owner.isClosed();
     }
 
-    protected boolean checkOwnership(LevelDB owner) {
+    boolean checkOwnership(LevelDB owner) {
         return this.owner.get() == owner;
     }
 

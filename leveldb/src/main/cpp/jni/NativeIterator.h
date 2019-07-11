@@ -13,7 +13,7 @@ extern "C" {
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeClose
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv  __unused *, jclass __unused, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeIterator
@@ -21,7 +21,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
  * Signature: (J)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeValid
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv  __unused *, jclass __unused, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeIterator
@@ -29,7 +29,7 @@ JNIEXPORT jboolean JNICALL Java_com_github_hf_leveldb_implementation_NativeItera
  * Signature: (J[B)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeek
-  (JNIEnv *, jclass, jlong, jbyteArray);
+  (JNIEnv *, jclass __unused, jlong, jbyteArray);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeIterator
@@ -37,7 +37,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeekToFirst
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv  __unused *, jclass __unused, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeIterator
@@ -45,7 +45,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeSeekToLast
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv  __unused *, jclass __unused, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeIterator
@@ -53,7 +53,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeNext
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv  __unused *, jclass __unused, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeIterator
@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativePrev
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv  __unused *, jclass __unused, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeIterator
@@ -69,7 +69,7 @@ JNIEXPORT void JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_
  * Signature: (J)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeKey
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv *, jclass __unused, jlong);
 
 /*
  * Class:     com_github_hf_leveldb_implementation_NativeIterator
@@ -77,7 +77,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeIte
  * Signature: (J)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_com_github_hf_leveldb_implementation_NativeIterator_nativeValue
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv *, jclass __unused, jlong);
 
 #ifdef __cplusplus
 }
